@@ -1,0 +1,22 @@
+const express = require('express');
+const router = new express.Router();
+const gymController = require('../controllers/gymController');
+
+const validate = require('../utils/validation');
+const {
+  gymRulesCreate,
+  gymRulesUpdate,
+  gymIdParam,
+  gymByMachineQuery
+} = require('../utils/gymValidator');
+
+// Gyms
+router.post('/', gymRulesCreate, validate, gymController.createGym);                       // Create
+router.get('/:id', gymIdParam, validate, gymController.getGymById);                    // Read (single)
+router.put('/:id', gymRulesUpdate, validate, gymController.updateGym);                     // Update
+router.delete('/:id', gymIdParam, validate, gymController.deleteGym);                  // Delete
+
+// Search gyms that have a specific machine in inventory
+router.get('/by-machine/:machineId', gymController.getGymsByMachine);
+
+module.exports = router;

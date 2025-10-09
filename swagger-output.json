@@ -1,0 +1,406 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Fitness Finder API",
+    "version": "1.0.0",
+    "description": "Simple Swagger spec for Gyms and Machines."
+  },
+  "servers": [
+    { "url": "http://localhost:8080", "description": "Local dev" }
+  ],
+  "tags": [
+    { "name": "Gyms" },
+    { "name": "Machines" }
+  ],
+  "paths": {
+    "/gyms": {
+      "post": {
+        "tags": ["Gyms"],
+        "summary": "Create a gym",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GymCreate" },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "Iron Temple",
+                    "city": "Frankfurt",
+                    "country": "Germany",
+                    "location": { "type": "Point", "coordinates": [8.6821, 50.1109] },
+                    "amenities": ["sauna", "wifi", "open_24_7"],
+                    "openingHours": [
+                      { "day": "mon", "open": "06:00", "close": "22:00" }
+                    ],
+                    "machines": [
+                      { "machine": "60f5c3c4f13a3b6b6b6b6b6b", "quantity": 4 }
+                    ],
+                    "priceTier": "$$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gym created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GymResponse" } } }
+          },
+          "400": { "description": "Validation error" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/gyms/{id}": {
+      "get": {
+        "tags": ["Gyms"],
+        "summary": "Get a gym by ID",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": {
+          "200": { "description": "Gym object", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Gym" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Invalid ID" }
+        }
+      },
+      "put": {
+        "tags": ["Gyms"],
+        "summary": "Update a gym",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GymUpdate" } } }
+        },
+        "responses": {
+          "200": { "description": "Gym updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GymResponse" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Invalid ID or validation error" }
+        }
+      },
+      "delete": {
+        "tags": ["Gyms"],
+        "summary": "Delete a gym",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": {
+          "200": { "description": "Gym deleted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageResponse" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Invalid ID" }
+        }
+      }
+    },
+    "/gyms/by-machine/{machineId}": {
+      "get": {
+        "tags": ["Gyms"],
+        "summary": "List gyms that have a specific machine",
+        "parameters": [
+          { "$ref": "#/components/parameters/MachineIdParam" },
+          { "$ref": "#/components/parameters/CityQuery" },
+          { "$ref": "#/components/parameters/CountryQuery" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of gyms",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Gym" } } } }
+          },
+          "400": { "description": "Invalid machineId" }
+        }
+      }
+    },
+
+    "/machines": {
+      "get": {
+        "tags": ["Machines"],
+        "summary": "List machines (optional filters)",
+        "parameters": [
+          { "$ref": "#/components/parameters/MachineTypeQuery" },
+          { "$ref": "#/components/parameters/BrandQuery" },
+          { "$ref": "#/components/parameters/NameQuery" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of machines",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Machine" } } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Machines"],
+        "summary": "Create a machine",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MachineCreate" },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "Lat Pulldown",
+                    "type": "strength",
+                    "brand": "TechnoGym",
+                    "primaryMuscleGroups": ["back", "biceps"],
+                    "isPlateLoaded": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Machine created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MachineResponse" } } } },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/machines/{id}": {
+      "get": {
+        "tags": ["Machines"],
+        "summary": "Get a machine by ID",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": {
+          "200": { "description": "Machine object", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Machine" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Invalid ID" }
+        }
+      },
+      "put": {
+        "tags": ["Machines"],
+        "summary": "Update a machine",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MachineUpdate" } } }
+        },
+        "responses": {
+          "200": { "description": "Machine updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MachineResponse" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Invalid ID or validation error" }
+        }
+      },
+      "delete": {
+        "tags": ["Machines"],
+        "summary": "Delete a machine",
+        "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
+        "responses": {
+          "200": { "description": "Machine deleted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageResponse" } } } },
+          "404": { "description": "Not found" },
+          "400": { "description": "Invalid ID" }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "parameters": {
+      "IdParam": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+        "description": "MongoDB ObjectId"
+      },
+      "MachineIdParam": {
+        "name": "machineId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+        "description": "Machine MongoDB ObjectId"
+      },
+      "CityQuery": {
+        "name": "city",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "CountryQuery": {
+        "name": "country",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "MachineTypeQuery": {
+        "name": "type",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string", "enum": ["cardio", "strength", "mobility", "functional", "accessory"] }
+      },
+      "BrandQuery": {
+        "name": "brand",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "NameQuery": {
+        "name": "name",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" }
+      }
+    },
+
+    "schemas": {
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        }
+      },
+
+      "GymCreate": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 120 },
+          "street": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "postalCode": { "type": "string" },
+          "country": { "type": "string" },
+          "location": { "$ref": "#/components/schemas/Point" },
+          "amenities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "sauna", "steam_room", "pool", "spa", "showers", "lockers", "towels",
+                "parking", "childcare", "cafe", "wheelchair_access", "wifi", "classes",
+                "climbing_wall", "boxing_ring", "basketball_court", "open_24_7"
+              ]
+            }
+          },
+          "openingHours": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/OpeningHours" }
+          },
+          "phone": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "website": { "type": "string" },
+          "priceTier": { "type": "string", "enum": ["$", "$$", "$$$"] },
+          "ratingAvg": { "type": "number", "minimum": 0, "maximum": 5 },
+          "ratingCount": { "type": "integer", "minimum": 0 },
+          "machines": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/GymMachineItem" }
+          },
+          "trainers": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" }
+          }
+        }
+      },
+
+      "GymUpdate": {
+        "allOf": [
+          { "$ref": "#/components/schemas/GymCreate" }
+        ],
+        "description": "Same fields as create; all optional"
+      },
+
+      "Gym": {
+        "allOf": [
+          { "$ref": "#/components/schemas/GymCreate" },
+          {
+            "type": "object",
+            "properties": {
+              "_id": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "updatedAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        ]
+      },
+
+      "GymResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Gym created" },
+          "gym": { "$ref": "#/components/schemas/Gym" }
+        }
+      },
+
+      "OpeningHours": {
+        "type": "object",
+        "properties": {
+          "day": { "type": "string", "enum": ["mon","tue","wed","thu","fri","sat","sun"] },
+          "open": { "type": "string", "example": "06:00" },
+          "close": { "type": "string", "example": "22:00" }
+        }
+      },
+
+      "GymMachineItem": {
+        "type": "object",
+        "properties": {
+          "machine": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+          "quantity": { "type": "integer", "minimum": 0, "default": 1 },
+          "lastServicedAt": { "type": "string", "format": "date-time" },
+          "areaNote": { "type": "string" }
+        }
+      },
+
+      "Point": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["Point"], "default": "Point" },
+          "coordinates": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2,
+            "example": [8.6821, 50.1109],
+            "description": "[lng, lat]"
+          }
+        }
+      },
+
+      "MachineCreate": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 100 },
+          "brand": { "type": "string" },
+          "type": { "type": "string", "enum": ["cardio", "strength", "mobility", "functional", "accessory"] },
+          "primaryMuscleGroups": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["full_body","chest","back","shoulders","biceps","triceps","core","glutes","quads","hamstrings","calves"]
+            }
+          },
+          "modelNumber": { "type": "string" },
+          "isPlateLoaded": { "type": "boolean" },
+          "maintenanceIntervalDays": { "type": "integer", "minimum": 0 },
+          "notes": { "type": "string" }
+        }
+      },
+
+      "MachineUpdate": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MachineCreate" }
+        ],
+        "description": "Same fields as create; all optional"
+      },
+
+      "Machine": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MachineCreate" },
+          {
+            "type": "object",
+            "properties": {
+              "_id": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "updatedAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        ]
+      },
+
+      "MachineResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Machine created" },
+          "machine": { "$ref": "#/components/schemas/Machine" }
+        }
+      }
+    }
+  }
+}
