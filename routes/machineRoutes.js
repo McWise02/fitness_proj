@@ -12,7 +12,6 @@ const {
 
 router.post('/', machineRulesCreate, validate, machineController.createMachine);
 router.get('/:id', machineIdParam, validate, machineController.getMachineById);
-router.get('/', machineController.getAllMachines);
 router.put('/:id', machineRulesUpdate, validate, machineController.updateMachine);
 router.delete('/:id', machineIdParam, validate, machineController.deleteMachine);
 

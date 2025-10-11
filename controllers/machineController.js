@@ -69,20 +69,3 @@ exports.listMachines = async (req, res) => {
   }
 };
 
-exports.getAllMachines = async (req, res) => {
-  try {
-    const page  = Math.max(parseInt(req.query.page || '1', 10), 1);
-    const limit = Math.max(parseInt(req.query.limit || '100', 10), 1);
-
-    const { items, total } = await machineDb.getAll({ page, limit });
-
-    res.status(200).json({
-      total,
-      page,
-      pageSize: items.length,
-      items
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching machines', error: err.message });
-  }
-};
