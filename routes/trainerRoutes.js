@@ -5,7 +5,7 @@ const ensureAuthed = require('../utils/ensureAuthed');     // GitHub session pre
 const ensureAppUser = require('../utils/ensureAppUser');   // req.session.userId present
 
 const trainerCtrl = require('../controllers/trainerController');
-const validate = require('../utils/validate-request');
+const validate = require('../utils/validation');
 const { registerRules, updateRules, listByCityQuery } = require('../utils/trainerValidator');
 
 // Register as a trainer (one profile per user)
