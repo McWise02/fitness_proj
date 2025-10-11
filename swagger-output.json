@@ -6,7 +6,7 @@
     "description": "Simple Swagger spec for Gyms and Machines."
   },
   "servers": [
-    { "url": "http://localhost:8080", "description": "Local dev" }
+    { "url": "https://fitness-proj.onrender.com", "description": "Local dev" }
   ],
   "tags": [
     { "name": "Gyms" },
