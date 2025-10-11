@@ -37,4 +37,21 @@ async function list(filters = {}) {
     .lean();
 }
 
-module.exports = { create, getById, update, remove, list };
+async function getAll({ page = 1, limit = 100 } = {}) {
+  const skip = (page - 1) * limit;
+
+  const [items, total] = await Promise.all([
+    Machine.find({})
+      .select('name brand type primaryMuscleGroups isPlateLoaded maintenanceIntervalDays modelNumber notes createdAt updatedAt')
+      .sort({ name: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Machine.countDocuments({})
+  ]);
+
+  return { items, total };
+}
+
+
+module.exports = { create, getById, update, remove, list, getAll };
