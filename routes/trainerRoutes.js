@@ -2,7 +2,6 @@ const express = require('express');
 const router = new express.Router();
 
 const ensureAuthed = require('../utils/ensureAuthed');     // GitHub session present
-const ensureAppUser = require('../utils/ensureAppUser');   // req.session.userId present
 
 const trainerCtrl = require('../controllers/trainerController');
 const validate = require('../utils/validation');
@@ -12,7 +11,6 @@ const { registerRules, updateRules, listByCityQuery } = require('../utils/traine
 router.post(
   '/register',
   ensureAuthed,
-  ensureAppUser,
   registerRules,
   validate,
   trainerCtrl.registerAsTrainer
@@ -31,7 +29,6 @@ router.get(
 router.get(
   '/me',
   ensureAuthed,
-  ensureAppUser,
   trainerCtrl.getMyTrainerProfile
 );
 
@@ -39,7 +36,6 @@ router.get(
 router.put(
   '/me',
   ensureAuthed,
-  ensureAppUser,
   updateRules,
   validate,
   trainerCtrl.updateMyTrainerProfile

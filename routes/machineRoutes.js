@@ -2,6 +2,7 @@ const express = require('express');
 const router = new express.Router();
 const machineController = require('../controllers/machineController');
 const validate = require('../utils/validation');
+const ensureAuthed = require('../utils/ensureAuthed'); 
 const {
   machineRulesCreate,
   machineRulesUpdate,
@@ -10,12 +11,12 @@ const {
 } = require('../utils/machineValidator');
 
 
-router.post('/', machineRulesCreate, validate, machineController.createMachine);
-router.get('/:id', machineIdParam, validate, machineController.getMachineById);
-router.put('/:id', machineRulesUpdate, validate, machineController.updateMachine);
-router.delete('/:id', machineIdParam, validate, machineController.deleteMachine);
+router.post('/', ensureAuthed,  machineRulesCreate, validate, machineController.createMachine);
+router.get('/:id',ensureAuthed ,  machineIdParam, validate, machineController.getMachineById);
+router.put('/:id', ensureAuthed, machineRulesUpdate, validate, machineController.updateMachine);
+router.delete('/:id', ensureAuthed, machineIdParam, validate, machineController.deleteMachine);
 
 
-router.get('/',  machineListQuery, validate, machineController.listMachines);
+router.get('/', ensureAuthed, machineListQuery, validate, machineController.listMachines);
 
 module.exports = router;
