@@ -10,7 +10,10 @@
   ],
   "tags": [
     { "name": "Gyms" },
-    { "name": "Machines" }
+    { "name": "Machines" },
+    { "name": "Trainers" },
+    { "name": "Users" }
+
   ],
   "paths": {
     "/gyms": {
@@ -187,7 +190,99 @@
           "400": { "description": "Invalid ID" }
         }
       }
+    },
+    "/trainers/register": {
+    "post": {
+      "tags": ["Trainers"],
+      "summary": "Register as a trainer (one profile per user)",
+      "security": [{ "cookieAuth": [] }],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/TrainerRegister" },
+            "examples": {
+              "default": {
+                "value": {
+                  "headline": "Strength & Conditioning Coach",
+                  "yearsExperience": 6,
+                  "certifications": ["NASM CPT", "CSCS"],
+                  "specialties": ["strength", "rehab"],
+                  "hourlyRate": 60,
+                  "trainingModes": ["in_person", "online"],
+                  "languages": ["English", "Deutsch"],
+                  "baseCity": "Frankfurt",
+                  "baseCountry": "Germany",
+                  "gymAffiliations": ["60f5c3c4f13a3b6b6b6b6b6b"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Registered as trainer",
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TrainerResponse" } } }
+        },
+        "409": { "description": "User already has a trainer profile" },
+        "401": { "description": "Unauthorized" }
+      }
     }
+  },
+
+  "/trainers": {
+    "get": {
+      "tags": ["Trainers"],
+      "summary": "List trainers in a city",
+      "security": [{ "cookieAuth": [] }],
+      "parameters": [
+        { "$ref": "#/components/parameters/CityQuery" },
+        { "$ref": "#/components/parameters/CountryQuery" },
+        { "$ref": "#/components/parameters/MinRatingQuery" },
+        { "$ref": "#/components/parameters/SpecialtiesQuery" }
+      ],
+      "responses": {
+        "200": {
+          "description": "Array of trainers",
+          "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Trainer" } } } }
+        },
+        "401": { "description": "Unauthorized" },
+        "400": { "description": "Validation error" }
+      }
+    }
+  },
+
+  "/trainers/me": {
+    "get": {
+      "tags": ["Trainers"],
+      "summary": "Get my trainer profile",
+      "security": [{ "cookieAuth": [] }],
+      "responses": {
+        "200": { "description": "Trainer document", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Trainer" } } } },
+        "404": { "description": "Trainer profile not found" },
+        "401": { "description": "Unauthorized" }
+      }
+    },
+    "put": {
+      "tags": ["Trainers"],
+      "summary": "Update my trainer profile",
+      "security": [{ "cookieAuth": [] }],
+      "requestBody": {
+        "required": true,
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TrainerUpdate" } } }
+      },
+      "responses": {
+        "200": {
+          "description": "Trainer updated",
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TrainerResponse" } } }
+        },
+        "404": { "description": "Trainer profile not found" },
+        "401": { "description": "Unauthorized" },
+        "400": { "description": "Validation error" }
+      }
+    }
+  }
   },
 
   "components": {
@@ -235,7 +330,21 @@
         "in": "query",
         "required": false,
         "schema": { "type": "string" }
-      }
+      },
+      "MinRatingQuery": {
+      "name": "minRating",
+      "in": "query",
+      "required": false,
+      "schema": { "type": "number", "minimum": 0, "maximum": 5 },
+      "description": "Minimum average rating filter"
+    },
+    "SpecialtiesQuery": {
+      "name": "specialties",
+      "in": "query",
+      "required": false,
+      "schema": { "type": "string" },
+      "description": "Comma-separated list of specialties (e.g., strength,rehab)"
+    }
     },
 
     "schemas": {
@@ -399,6 +508,98 @@
         "properties": {
           "message": { "type": "string", "example": "Machine created" },
           "machine": { "$ref": "#/components/schemas/Machine" }
+        }
+      },
+      "TrainerRegister": {
+        "type": "object",
+        "properties": {
+          "headline": { "type": "string", "maxLength": 120 },
+          "yearsExperience": { "type": "integer", "minimum": 0, "maximum": 60 },
+          "certifications": { "type": "array", "items": { "type": "string" } },
+          "specialties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "strength","hypertrophy","weight_loss","powerlifting",
+                "olympic_lifting","mobility","rehab","endurance",
+                "functional","prenatal","senior_fitness","sports_performance"
+              ]
+            }
+          },
+          "hourlyRate": { "type": "number", "minimum": 0 },
+          "trainingModes": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["in_person","online","hybrid"] }
+          },
+          "languages": { "type": "array", "items": { "type": "string" } },
+          "baseCity": { "type": "string" },
+          "baseCountry": { "type": "string" },
+          "gymAffiliations": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" }
+          }
+        },
+        "additionalProperties": false
+      },
+
+      "TrainerUpdate": {
+        "allOf": [
+          { "$ref": "#/components/schemas/TrainerRegister" }
+        ],
+        "description": "Same fields as register; all optional"
+      },
+
+      "Trainer": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+          "user": {
+            "type": "object",
+            "description": "Populated User (subset)",
+            "properties": {
+              "_id": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+              "firstName": { "type": "string" },
+              "lastName": { "type": "string" },
+              "avatarUrl": { "type": "string" }
+            }
+          },
+          "headline": { "type": "string" },
+          "yearsExperience": { "type": "integer" },
+          "certifications": { "type": "array", "items": { "type": "string" } },
+          "specialties": { "type": "array", "items": { "type": "string" } },
+          "hourlyRate": { "type": "number" },
+          "trainingModes": { "type": "array", "items": { "type": "string" } },
+          "languages": { "type": "array", "items": { "type": "string" } },
+          "ratingAvg": { "type": "number" },
+          "ratingCount": { "type": "integer" },
+          "baseCity": { "type": "string" },
+          "baseCountry": { "type": "string" },
+          "gymAffiliations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Populated Gym (subset)",
+              "properties": {
+                "_id": { "type": "string", "pattern": "^[0-9a-fA-F]{24}$" },
+                "name": { "type": "string" },
+                "city": { "type": "string" },
+                "country": { "type": "string" },
+                "ratingAvg": { "type": "number" }
+              }
+            }
+          },
+          "isVerified": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "TrainerResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Registered as trainer" },
+          "trainer": { "$ref": "#/components/schemas/Trainer" }
         }
       }
     }

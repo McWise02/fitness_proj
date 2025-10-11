@@ -33,8 +33,9 @@ const UserSchema = new mongoose.Schema(
     // Fitness preferences
     goals: [{ type: String, trim: true }],
     preferredWorkoutTimes: [{ type: String, enum: ['morning', 'afternoon', 'evening'] }],
+    githubId: { type: String, unique: true, sparse: true, index: true },
   },
-  { timestamps: true }
+  { timestamps: true, collection: 'User' }
 );
 
 UserSchema.index({ firstName: 'text', lastName: 'text', city: 'text', country: 'text' });

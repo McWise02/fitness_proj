@@ -12,8 +12,8 @@ const swaggerDocument = require('./swagger-output.json'); // keep your file name
 // ---- ROUTES (fix the filenames to your actual routes) ----
 const gymRoutes = require('./routes/gymRoutes');
 const machineRoutes = require('./routes/machineRoutes');
-//const trainerRoutes = require('./routes/trainerRoutes'); // if you have it
-//const userRoutes = require('./routes/userRoutes');       // your /auth routes
+const trainerRoutes = require('./routes/trainerRoutes'); // if you have it
+const userRoutes = require('./routes/userRoutes');       // your /auth routes
 
 // ----------------------------------------------------------------------------
 // PASSPORT (GitHub)
@@ -49,6 +49,7 @@ passport.use(
 // ----------------------------------------------------------------------------
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // <— needed for form POST body
 
 // simple CORS (adjust as needed)
 app.use((req, res, next) => {
@@ -129,10 +130,10 @@ const host = process.env.HOST || 'localhost';
     );
 
     // Mount routes ONLY after DB connect
-    //app.use('/auth', userRoutes);
+    app.use('/auth', userRoutes);
     app.use('/gyms', gymRoutes);
     app.use('/machines', machineRoutes);
-    //app.use('/trainers', trainerRoutes); // if applicable
+    app.use('/trainers', trainerRoutes); // if applicable
 
     // Healthcheck
     app.get('/health', (_req, res) =>
