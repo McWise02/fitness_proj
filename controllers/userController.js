@@ -38,7 +38,7 @@ exports.afterGithubCallback = async (req, res) => {
 };
 
 exports.renderSignup = (req, res) => {
-  const filePath = path.join(__dirname, '..', 'views', 'signup.html');
+  const filePath = path.join(__dirname, '..', 'views/account', 'signup.html');
   res.sendFile(filePath);
 };
 
