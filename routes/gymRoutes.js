@@ -17,6 +17,6 @@ router.put('/:id', gymRulesUpdate, validate, gymController.updateGym);          
 router.delete('/:id', gymIdParam, validate, gymController.deleteGym);                  // Delete
 
 // Search gyms that have a specific machine in inventory
-router.get('/by-machine/:machineId', gymController.getGymsByMachine);
+router.get('/by-machine/:machineId', gymByMachineQuery, gymController.getGymsByMachine);
 
 module.exports = router;
