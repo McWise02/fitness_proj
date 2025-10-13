@@ -68,7 +68,7 @@ app.use(
     saveUninitialized: false,
     name: 'sessionId',
     // For production, consider:
-    // cookie: { secure: true, sameSite: 'lax' }
+    cookie: { secure: true, sameSite: 'lax' }
     // store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
   })
 );
@@ -93,7 +93,7 @@ app.use(
     swaggerOptions: {
       requestInterceptor: (req) => {
         // If you serve Swagger from a different origin, you might need:
-        // req.credentials = 'include';
+        req.credentials = 'include';
         return req;
       },
       responseInterceptor: (res) => {
