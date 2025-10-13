@@ -2,6 +2,7 @@
 const express = require('express');
 const passport = require('passport');
 
+const ensureUser = require('../utils/ensureAppUser');
 const ensureAuthed = require('../utils/ensureAuthed');
 const userCtrl = require('../controllers/userController');
 

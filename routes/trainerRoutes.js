@@ -2,7 +2,7 @@ const express = require('express');
 const router = new express.Router();
 
 const ensureAuthed = require('../utils/ensureAuthed');     // GitHub session present
-
+const ensureAppUser = require('../utils/ensureAppUser'); 
 const trainerCtrl = require('../controllers/trainerController');
 const validate = require('../utils/validation');
 const { registerRules, updateRules, listByCityQuery } = require('../utils/trainerValidator');
@@ -11,6 +11,7 @@ const { registerRules, updateRules, listByCityQuery } = require('../utils/traine
 router.post(
   '/register',
   ensureAuthed,
+  ensureAppUser,
   registerRules,
   validate,
   trainerCtrl.registerAsTrainer
