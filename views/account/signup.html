@@ -66,27 +66,43 @@
   </div>
 
   <script>
-    // Prefill from session (/auth/me)
-    fetch('/auth/me', { credentials: 'include' })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (!data || !data.ok) return;
-        const { username, displayName, avatar, emails } = data.user || {};
-        const el = document.getElementById('ghHeader');
-        if (el) {
-          el.innerHTML = (avatar ? `<img class="avatar" src="${avatar}" alt="avatar" /> ` : '') +
-            `Signed in as <strong>${username || 'GitHub user'}</strong>`;
-        }
-        const email = Array.isArray(emails) && emails[0]?.value ? emails[0].value : '';
-        if (email) document.getElementById('email').value = email;
+  (async function() {
+    try {
+      const r = await fetch('/auth/me', {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
 
-        if (displayName) {
-          const parts = String(displayName).trim().split(' ');
-          document.getElementById('firstName').value = parts[0] || '';
-          document.getElementById('lastName').value = parts.slice(1).join(' ');
-        }
-      })
-      .catch(()=>{});
-  </script>
+      if (r.status === 401) {
+        // Not authenticated (e.g., cookie missing) -> kick off GitHub login and return here
+        const here = location.pathname + location.search + location.hash;
+        location.href = '/auth/github?returnTo=' + encodeURIComponent(here);
+        return;
+      }
+
+      if (!r.ok) return; // silently ignore other errors
+      const data = await r.json();
+      if (!data || !data.ok) return;
+
+      const { username, displayName, avatar, emails } = data.user || {};
+      const el = document.getElementById('ghHeader');
+      if (el) {
+        el.innerHTML = (avatar ? `<img class="avatar" src="${avatar}" alt="avatar" /> ` : '') +
+          `Signed in as <strong>${username || 'GitHub user'}</strong>`;
+      }
+      const email = Array.isArray(emails) && emails[0]?.value ? emails[0].value : '';
+      if (email) document.getElementById('email').value = email;
+
+      if (displayName) {
+        const parts = String(displayName).trim().split(' ');
+        document.getElementById('firstName').value = parts[0] || '';
+        document.getElementById('lastName').value = parts.slice(1).join(' ');
+      }
+    } catch (e) {
+      // no-op
+    }
+  })();
+</script>
+
 </body>
 </html>

@@ -52,8 +52,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // <— needed for form POST body
 
 // simple CORS (adjust as needed)
+app.set('trust proxy', 1);
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // narrow this in prod
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -107,6 +107,11 @@ app.use(
     },
   })
 );
+
+app.use((req, _res, next) => {
+  console.log('auth?', req.isAuthenticated && req.isAuthenticated(), 'sessionId?', req.sessionID);
+  next();
+});
 
 // ----------------------------------------------------------------------------
 // DB CONNECT (Mongoose) then mount routes
