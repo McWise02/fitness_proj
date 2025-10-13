@@ -85,26 +85,13 @@ app.use((req, _res, next) => {
 // ----------------------------------------------------------------------------
 // SWAGGER
 // ----------------------------------------------------------------------------
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  customJs: '/swagger-custom.js',
-  explorer: true,
-  swaggerOptions: { requestInterceptor: (r)=>{ r.credentials='include'; return r; } }
-}));
-
-app.get('/swagger-custom.js', (_req, res) => {
-  res.type('application/javascript').send(`
-    window.addEventListener('load', () => {
-      const topbar = document.querySelector('.swagger-ui .topbar');
-      if (!topbar) return;
-      const btn = document.createElement('a');
-      btn.textContent = 'Login with GitHub';
-      btn.href = '/auth/github?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
-      btn.style.marginLeft = '12px';
-      btn.className = 'link';
-      topbar.appendChild(btn);
-    });
-  `);
-});
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    explorer: true,
+  })
+);
 
 // ----------------------------------------------------------------------------
 // DB CONNECT (Mongoose) then mount routes
