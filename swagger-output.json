@@ -5,6 +5,10 @@
     "version": "1.0.0",
     "description": "Simple Swagger spec for Gyms and Machines."
   },
+  "externalDocs": {
+    "description": "Login with GitHub",
+    "url": "/auth/github?returnTo=/api-docs"
+  },
   "servers": [
     { "url": "https://fitness-proj.onrender.com", "description": "Local dev" }
   ],
@@ -56,6 +60,99 @@
         }
       }
     },
+     "/auth/me": {
+    "get": {
+      "tags": ["Users"],
+      "summary": "Get current OAuth session info (for prefill)",
+      "description": "Returns minimal GitHub session data used to prefill the signup form. Requires active session.",
+      "security": [{ "cookieAuth": [] }],
+      "responses": {
+        "200": {
+          "description": "Session data",
+          "content": {
+            "application/json": {
+              "examples": {
+                "default": {
+                  "value": {
+                    "ok": true,
+                    "user": {
+                      "id": "123456",
+                      "username": "octocat",
+                      "displayName": "Mona Lisa",
+                      "avatar": "https://avatars.githubusercontent.com/u/583231?v=4",
+                      "emails": [{ "value": "octo@example.com" }]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": { "description": "Unauthorized (no OAuth session)" }
+      }
+    }
+  },
+
+  "/auth/complete-profile": {
+    "post": {
+      "tags": ["Users"],
+      "summary": "Complete profile (create/update User)",
+      "description": "Creates or updates your application User document after GitHub login, then redirects to /api-docs. In Swagger, response will be a 302 or 200 depending on your setup.",
+      "security": [{ "cookieAuth": [] }],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": { "$ref": "#/components/schemas/UserProfileCompletion" },
+            "examples": {
+              "default": {
+                "value": {
+                  "firstName": "Mona",
+                  "lastName": "Lisa",
+                  "email": "octo@example.com",
+                  "password": "supersecret",
+                  "goals": "strength, mobility",
+                  "preferredWorkoutTimes": "morning",
+                  "city": "Frankfurt",
+                  "country": "Germany"
+                }
+              }
+            }
+          },
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/UserProfileCompletion" }
+          }
+        }
+      },
+      "responses": {
+        "302": { "description": "Redirect to /api-docs on success" },
+        "200": { "description": "OK (if not redirecting in test environment)" },
+        "400": { "description": "Missing required fields" },
+        "401": { "description": "Unauthorized (no OAuth session)" },
+        "500": { "description": "Server error" }
+      }
+    }
+  },
+
+  "/auth/logout": {
+    "post": {
+      "tags": ["Users"],
+      "summary": "Logout",
+      "description": "Clears the session and cookie.",
+      "security": [{ "cookieAuth": [] }],
+      "responses": {
+        "200": {
+          "description": "Logged out",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BasicOkResponse" },
+              "examples": { "default": { "value": { "ok": true } } }
+            }
+          }
+        }
+      }
+    }
+  },
     "/gyms/{id}": {
       "get": {
         "tags": ["Gyms"],
@@ -345,6 +442,15 @@
       "schema": { "type": "string" },
       "description": "Comma-separated list of specialties (e.g., strength,rehab)"
     }
+    },
+
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionId",
+        "description": "Session cookie set after GitHub OAuth"
+      }
     },
 
     "schemas": {

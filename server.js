@@ -90,6 +90,21 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
     explorer: true,
+    swaggerOptions: {
+      requestInterceptor: (req) => {
+        // If you serve Swagger from a different origin, you might need:
+        // req.credentials = 'include';
+        return req;
+      },
+      responseInterceptor: (res) => {
+        try {
+          if (res && res.status === 401 && typeof window !== 'undefined') {
+            window.location = '/auth/github';
+          }
+        } catch (_) {}
+        return res;
+      },
+    },
   })
 );
 
