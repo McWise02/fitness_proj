@@ -93,10 +93,20 @@ exports.deleteUserById = async (req, res) => {
   }
 };
 
-exports.renderSignup = (req, res) => {
-  const filePath = path.join(__dirname, '..', 'views/account', 'signup.html');
-  res.sendFile(filePath);
-};
+exports.renderSignup = async (req, res) => {
+    try {
+      const id = req.session?.userId;
+      if (id && mongoose.isValidObjectId(id)) {
+        const user = await userDb.getById(id);
+        if (user) return res.redirect('/api-docs');
+      }
+      const filePath = path.join(__dirname, '..', 'views/account', 'signup.html');
+      res.sendFile(filePath);
+    } catch (e) {
+      next(e);
+    }
+  };
+
 
 exports.me = (req, res) => {
   if (!req.isAuthenticated || !req.isAuthenticated()) {
