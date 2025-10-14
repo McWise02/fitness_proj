@@ -11,6 +11,11 @@ exports.afterGithubCallback = async (req, res) => {
       : null;
     const avatarUrl = req.user?.avatar;
 
+    const isAlreadyuser = await userDb.findByGithubId(githubId);
+    if (isAlreadyuser) {
+      req.session.userId = isAlreadyuser._id.toString();
+      return res.redirect('/api-docs');
+    }
     const appUser = await userDb.ensureLinkedFromGithub({
       githubId,
       email: emailFromGithub,
