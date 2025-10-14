@@ -5,15 +5,15 @@ const userDb = require('../database/userDb');
 
 exports.afterGithubCallback = async (req, res) => {
   try {
-    const githubId = req.user?.id;
+    const userId = req.session?.userId;
     const emailFromGithub = Array.isArray(req.user?.emails) && req.user.emails[0]?.value
       ? req.user.emails[0].value
       : null;
     const avatarUrl = req.user?.avatar;
 
-    const isAlreadyuser = await userDb.findByGithubId(githubId);
+    const isAlreadyuser = await userDb.findById(userId);
     if (isAlreadyuser) {
-      req.session.userId = isAlreadyuser._id.toString();
+      req.session.userId = userId.toString();
       return res.redirect('/api-docs');
     }
     const appUser = await userDb.ensureLinkedFromGithub({
@@ -89,11 +89,11 @@ exports.completeProfile = async (req, res) => {
       country,
     } = req.body;
 
-    const githubId = req.user?.id;
+    const userId = String(req.session?.userId);
 
-    const isAlreadyuser = await userDb.findByGithubId(githubId);
+    const isAlreadyuser = await userDb.findById(userId);
     if (isAlreadyuser) {
-      req.session.userId = isAlreadyuser._id.toString();
+      req.session.userId = userId.toString();
       return res.redirect('/api-docs');
     }
 

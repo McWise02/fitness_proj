@@ -1,5 +1,4 @@
-// middleware/ensureAppUser.js
-const mongoose = require('mongoose');
+
 const userDb = require('../database/userDb'); // adjust path if needed
 
 module.exports = async function ensureAppUser(req, res, next) {
