@@ -8,7 +8,6 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json'); // keep your file name
-const MongoStore = require('connect-mongo');
 // ---- ROUTES (fix the filenames to your actual routes) ----
 const gymRoutes = require('./routes/gymRoutes');
 const machineRoutes = require('./routes/machineRoutes');
@@ -68,7 +67,6 @@ app.use(
     resave: false,
     saveUninitialized: false,
     name: 'sessionId',
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
