@@ -37,6 +37,11 @@ async function createForUser(userId, data) {
     .lean();
 }
 
+async function deleteById(id) {
+  // Returns the deleted doc (or null if not found)
+  return Trainer.findByIdAndDelete(id);
+}
+
 /** Get a trainer profile by the owning user id */
 async function getByUserId(userId) {
   if (!mongoose.Types.ObjectId.isValid(userId)) return null;
@@ -80,6 +85,7 @@ async function listByCity({ city, country, minRating, specialties }) {
 
 module.exports = {
   createForUser,
+  deleteById,
   getByUserId,
   updateForUser,
   listByCity,

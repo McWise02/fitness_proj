@@ -14,6 +14,24 @@ exports.registerAsTrainer = async (req, res) => {
   }
 };
 
+exports.deleteTrainerById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: 'Invalid trainer id' });
+    }
+
+    const deleted = await trainerDb.deleteById(id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Trainer not found' });
+    }
+
+    return res.status(200).json({ message: 'Trainer deleted', id });
+  } catch (err) {
+    return res.status(500).json({ message: 'Error deleting trainer', error: err.message });
+  }
+};
 
 exports.listByCity = async (req, res) => {
   try {

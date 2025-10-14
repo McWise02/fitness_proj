@@ -60,6 +60,67 @@
         }
       }
     },
+    "/users/{id}": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete a user by ID",
+        "operationId": "deleteUserById",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/ObjectIdParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteResponse" },
+                "examples": {
+                  "ok": {
+                    "value": { "message": "User deleted", "id": "64a7f0f4f0f0f0f0f0f0f0f9" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user id",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "badId": { "value": { "message": "Invalid user id" } }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "notFound": { "value": { "message": "User not found" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "serverErr": {
+                    "value": { "message": "Error deleting user", "error": "db error details" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
      "/auth/me": {
     "get": {
       "tags": ["Users"],
@@ -285,6 +346,67 @@
           "200": { "description": "Machine deleted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MessageResponse" } } } },
           "404": { "description": "Not found" },
           "400": { "description": "Invalid ID" }
+        }
+      }
+    },
+    "/trainers/{id}": {
+      "delete": {
+        "tags": ["Trainers"],
+        "summary": "Delete a trainer by ID",
+        "operationId": "deleteTrainerById",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/ObjectIdParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trainer deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteResponse" },
+                "examples": {
+                  "ok": {
+                    "value": { "message": "Trainer deleted", "id": "64a7f0f4f0f0f0f0f0f0f0f9" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid trainer id",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "badId": { "value": { "message": "Invalid trainer id" } }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Trainer not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "notFound": { "value": { "message": "Trainer not found" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "examples": {
+                  "serverErr": {
+                    "value": { "message": "Error deleting trainer", "error": "db error details" }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

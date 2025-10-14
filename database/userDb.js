@@ -51,6 +51,11 @@ async function ensureLinkedFromGithub({ githubId, email, avatarUrl }) {
   return null;
 }
 
+async function deleteById(id) {
+  // Returns the deleted doc (or null if not found)
+  return User.findByIdAndDelete(id);
+}
+
 async function upsertFromProfileCompletion({
   firstName,
   lastName,
@@ -103,6 +108,7 @@ async function getAll() {
 module.exports = {
   getById,
   getAll,
+  deleteById,
   // reads
   findById,
   findByEmail,
