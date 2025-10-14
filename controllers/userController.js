@@ -95,7 +95,9 @@ exports.deleteUserById = async (req, res) => {
 
 exports.renderSignup = async (req, res) => {
     try {
+      console.log('Rendering signup page');
       const id = req.session?.userId;
+      console.log('Session userId in renderSignup:', id);
       if (id) {
         const user = await userDb.getById(id);
         if (user) return res.redirect('/api-docs');
