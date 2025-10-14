@@ -46,9 +46,9 @@ exports.deleteUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(400).json({ message: 'Invalid user id' });
-    }
+    // if (!mongoose.isValidObjectId(id)) {
+    //   return res.status(400).json({ message: 'Invalid user id' });
+    // }
 
     const deleted = await userDb.deleteById(id);
     if (!deleted) {
