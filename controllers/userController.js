@@ -46,9 +46,7 @@ exports.deleteUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // if (!mongoose.isValidObjectId(id)) {
-    //   return res.status(400).json({ message: 'Invalid user id' });
-    // }
+
 
     const deleted = await userDb.deleteById(id);
     if (!deleted) {
@@ -160,9 +158,6 @@ exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // if (!mongoose.isValidObjectId(id)) {
-    //   return res.status(400).json({ message: 'Invalid user id' });
-    // }
     
     const user = await userDb.getById(id);
     if (!user) return res.status(404).json({ message: 'User not found' });

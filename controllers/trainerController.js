@@ -18,9 +18,6 @@ exports.deleteTrainerById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(400).json({ message: 'Invalid trainer id' });
-    }
 
     const deleted = await trainerDb.deleteById(id);
     if (!deleted) {
