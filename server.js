@@ -76,9 +76,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// request logger
 app.use((req, _res, next) => {
-  console.log('REQ', req.method, req.originalUrl);
+  console.log('Cookies:', req.headers.cookie);
+  console.log('SessionID:', req.sessionID);
+  console.log('Session has userId?', !!req.session?.userId);
   next();
 });
 

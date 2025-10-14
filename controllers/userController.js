@@ -19,6 +19,8 @@ exports.afterGithubCallback = async (req, res) => {
       req.user?.avatarUrl ||
       null;
 
+    console.log("Github ID:", githubId);
+
     // 1) If there's already a logged-in app user, link GitHub to that account
     if (req.session?.userId) {
       const currentUserId = String(req.session.userId);
