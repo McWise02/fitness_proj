@@ -18,12 +18,19 @@ router.get(
   passport.authenticate('github', { scope: ['read:user', 'user:email'] })
 );
 
-// GitHub callback → controller decides redirect (form or /api-docs)
 router.get(
   '/github/callback',
+  (req, _res, next) => { console.log('→ HIT /auth/github/callback'); next(); },
   passport.authenticate('github', { failureRedirect: '/auth/failure' }),
+  (req, _res, next) => { console.log('✓ passport success, req.user?', !!req.user); next(); },
   userCtrl.afterGithubCallback
 );
+// GitHub callback → controller decides redirect (form or /api-docs)
+// router.get(
+//   '/github/callback',
+//   passport.authenticate('github', { failureRedirect: '/auth/failure' }),
+//   userCtrl.afterGithubCallback
+// );
 
 // Serve signup HTML (must be authed with GitHub session)
 router.get('/complete-profile', ensureAuthed, userCtrl.renderSignup);
