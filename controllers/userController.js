@@ -29,7 +29,9 @@ exports.afterGithubCallback = async (req, res) => {
         avatarUrl,
       });
 
-      if (!linked) return res.redirect('/auth/complete-profile');
+      if (!linked) {
+        console.log('No user found to link; redirecting to complete-profile');
+        return res.redirect('/auth/complete-profile');} 
 
       req.session.userId = linked._id.toString();
       const dest = (req.session.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
@@ -52,6 +54,7 @@ exports.afterGithubCallback = async (req, res) => {
     }
 
     if (!user) {
+      console.log('No user found or created; redirecting to complete-profile');
       if (req.session) req.session.returnTo = '/auth/complete-profile';
       return res.redirect('/auth/complete-profile');
     }

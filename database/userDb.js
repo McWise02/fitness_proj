@@ -18,8 +18,8 @@ async function findByEmail(email) {
 }
 
 async function findById(id) {
-  if (!id) return null;
-  return await User.findById(id).exec();
+  console.log(id);
+  return User.findOne({ _id: id }).lean();
 }
 
 
