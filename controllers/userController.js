@@ -52,6 +52,9 @@ exports.me = (req, res) => {
 
 exports.completeProfile = async (req, res) => {
   try {
+
+
+
     const {
       firstName,
       lastName,
@@ -62,6 +65,14 @@ exports.completeProfile = async (req, res) => {
       city,
       country,
     } = req.body;
+
+    const githubId = req.user?.id;
+
+    const isAlreadyuser = await userDb.findByGithubId(githubId);
+    if (isAlreadyuser) {
+      req.session.userId = isAlreadyuser._id.toString();
+      return res.redirect('/api-docs');
+    }
 
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).send('Missing required fields');
