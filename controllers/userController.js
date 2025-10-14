@@ -41,6 +41,7 @@ exports.afterGithubCallback = async (req, res) => {
       return res.redirect(dest);
     }
 
+    console.log("Github ID:", githubId);
     // 2) No existing session: try to find a user by githubId
     let user = await userDb.findByGithubId(githubId);
     if (!user) {
@@ -114,6 +115,7 @@ exports.completeProfile = async (req, res) => {
 
 
     const sessionUserId = req.session?.userId;
+    console.log('Session userId:', sessionUserId);
     const hasValidSessionId = sessionUserId && String(sessionUserId).match(/^[a-fA-F0-9]{24}$/);
 
 
