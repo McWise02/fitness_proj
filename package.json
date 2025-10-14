@@ -4,7 +4,7 @@
   "description": "the final project is a database of fitness related things. it is a database to keep track of who is working out where and what trainers there are",
   "main": "server.js",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "swagger-autogen": "swagger"
   },
   "author": "",
@@ -19,5 +19,9 @@
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "mockingoose": "^2.16.2"
   }
 }

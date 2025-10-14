@@ -13,6 +13,7 @@ const {
 // Gyms
 router.post('/', gymRulesCreate, validate, gymController.createGym);                       // Create
 router.get('/:id', gymIdParam, validate, gymController.getGymById);                    // Read (single)
+router.get('/',  validate, gymController.getAllGyms); 
 router.put('/:id', gymRulesUpdate, validate, gymController.updateGym);                     // Update
 router.delete('/:id', gymIdParam, validate, gymController.deleteGym);                  // Delete
 

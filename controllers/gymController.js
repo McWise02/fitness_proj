@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const gymDb = require('../database/gymDb');
 
-// Helpers
+
 const isObjectId = (v) => mongoose.Types.ObjectId.isValid(v);
 
 exports.createGym = async (req, res) => {
   try {
     const payload = req.body;
-    // Optional minimal validation
+ 
     if (!payload?.name) {
       return res.status(400).json({ message: 'name is required' });
     }
@@ -29,6 +29,15 @@ exports.getGymById = async (req, res) => {
     res.status(200).json(gym);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching gym', error: err.message });
+  }
+};
+
+exports.getAllGyms = async (_req, res) => {
+  try {
+    const gyms = await gymDb.getAll();
+    return res.status(200).json(gyms); // [] is fine
+  } catch (err) {
+    return res.status(500).json({ message: 'Error fetching gym', error: err.message });
   }
 };
 

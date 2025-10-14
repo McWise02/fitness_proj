@@ -16,6 +16,12 @@ async function getById(id) {
   return gym;
 }
 
+async function getAll() {
+  // Add .select(...) if you want to trim fields
+  const gyms = await Gym.find().lean();
+  return gyms; // [] when no gyms
+}
+
 async function update(id, updates) {
   const opts = { new: true, runValidators: true };
   const gym = await Gym.findByIdAndUpdate(id, updates, opts)
@@ -48,4 +54,4 @@ async function findByMachine(machineId, filters = {}) {
     .lean();
 }
 
-module.exports = { create, getById, update, remove, findByMachine };
+module.exports = { create, getById, update, remove, findByMachine, getAll };

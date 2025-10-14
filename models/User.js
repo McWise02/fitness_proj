@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Invalid email'],
     },
-    // Store a hash, not raw passwords
+
     passwordHash: { type: String, required: true },
 
     role: {
@@ -22,15 +22,13 @@ const UserSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Optional profile fields
     avatarUrl: { type: String, trim: true },
     bio: { type: String, trim: true, maxlength: 1000 },
 
-    // Simple location info for search/filter
     city: { type: String, trim: true, index: true },
     country: { type: String, trim: true, index: true },
 
-    // Fitness preferences
+
     goals: [{ type: String, trim: true }],
     preferredWorkoutTimes: [{ type: String, enum: ['morning', 'afternoon', 'evening'] }],
     githubId: { type: String, unique: true, sparse: true, index: true },

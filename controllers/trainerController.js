@@ -1,12 +1,11 @@
 const trainerDb = require('../database/trainerDb');
 
-// POST /trainers/register
+
 exports.registerAsTrainer = async (req, res) => {
   try {
-    const userId = req.session.userId; // set after profile completion
+    const userId = req.session.userId; 
     const payload = req.body || {};
 
-    // create will throw if profile already exists
     const trainer = await trainerDb.createForUser(userId, payload);
     res.status(201).json({ message: 'Registered as trainer', trainer });
   } catch (err) {
@@ -15,7 +14,7 @@ exports.registerAsTrainer = async (req, res) => {
   }
 };
 
-// GET /trainers?city=...&country=...&minRating=&specialties=strength,rehab
+
 exports.listByCity = async (req, res) => {
   try {
     const { city, country, minRating, specialties } = req.query;
@@ -37,7 +36,7 @@ exports.listByCity = async (req, res) => {
   }
 };
 
-// GET /trainers/me
+
 exports.getMyTrainerProfile = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -49,7 +48,7 @@ exports.getMyTrainerProfile = async (req, res) => {
   }
 };
 
-// PUT /trainers/me
+
 exports.updateMyTrainerProfile = async (req, res) => {
   try {
     const userId = req.session.userId;

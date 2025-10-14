@@ -1,7 +1,7 @@
-// controllers/userController.js
+
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const userDb = require('../database/userDb'); // <-- use DB layer
+const userDb = require('../database/userDb'); 
 
 exports.afterGithubCallback = async (req, res) => {
   try {
@@ -67,7 +67,7 @@ exports.completeProfile = async (req, res) => {
       return res.status(400).send('Missing required fields');
     }
 
-    // security work stays in controller
+
     const passwordHash = await bcrypt.hash(password, 12);
 
     const goalsArr = (goals || '')
@@ -109,6 +109,32 @@ exports.logout = (req, res) => {
       res.json({ ok: true });
     });
   });
+};
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await userDb.getAll();
+    return res.status(200).json(users);
+  } catch (err) {
+    return res.status(500).json({ message: 'Error fetching users', error: err.message });
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // if (!mongoose.isValidObjectId(id)) {
+    //   return res.status(400).json({ message: 'Invalid user id' });
+    // }
+    
+    const user = await userDb.getById(id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    return res.status(200).json(user);
+  } catch (err) {
+    return res.status(500).json({ message: 'Error fetching user', error: err.message });
+  }
 };
 
 
