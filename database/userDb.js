@@ -18,6 +18,7 @@ async function findByEmail(email) {
 }
 
 async function findById(id) {
+  console.log(id);
   if (!id) return null;
   return await User.findById(id).exec();
 }
