@@ -67,7 +67,7 @@
         "operationId": "deleteUserById",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
-          { "$ref": "#/components/parameters/ObjectIdParam" }
+          { "$ref": "#/components/parameters/IdParam" }
         ],
         "responses": {
           "200": {
@@ -356,7 +356,7 @@
         "operationId": "deleteTrainerById",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
-          { "$ref": "#/components/parameters/ObjectIdParam" }
+          { "$ref": "#/components/parameters/IdParam" }
         ],
         "responses": {
           "200": {
@@ -582,6 +582,25 @@
           "message": { "type": "string" }
         }
       },
+      "DeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "User deleted" },
+          "id": {
+            "type": "string",
+            "description": "Deleted resource id",
+            "example": "64a7f0f4f0f0f0f0f0f0f0f9"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Error deleting user" },
+          "error": { "type": "string", "nullable": true, "example": "db error details" }
+        }
+      }
+    },
 
       "GymCreate": {
         "type": "object",
