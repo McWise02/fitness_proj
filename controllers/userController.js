@@ -96,7 +96,7 @@ exports.deleteUserById = async (req, res) => {
 exports.renderSignup = async (req, res) => {
     try {
       const id = req.session?.userId;
-      if (id && mongoose.isValidObjectId(id)) {
+      if (id) {
         const user = await userDb.getById(id);
         if (user) return res.redirect('/api-docs');
       }
