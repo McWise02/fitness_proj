@@ -67,8 +67,13 @@ app.use(
     resave: false,
     saveUninitialized: false,
     name: 'sessionId',
-    // For production, consider:
-    cookie: { secure: true, sameSite: 'lax' }
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 1000 * 60 * 60 * 24
+    }
     // store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
   })
 );

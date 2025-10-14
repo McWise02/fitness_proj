@@ -3,7 +3,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const userDb = require('../database/userDb'); 
 
-// controllers/authController.js
+
 exports.afterGithubCallback = async (req, res) => {
   try {
     const githubId = req.user?.id; // passport-github2 puts the GitHub id here
