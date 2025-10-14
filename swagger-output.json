@@ -651,6 +651,12 @@
         ],
         "description": "Same fields as create; all optional"
       },
+      "BasicOkResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": true }
+        }
+      },
 
       "Gym": {
         "allOf": [
