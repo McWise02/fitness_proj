@@ -13,14 +13,9 @@ module.exports = async function ensureAppUser(req, res, next) {
     const user = await userDb.getById(id); // lean object
     if (!user) return redirectToAuth(req, res);
 
-    if (isProfileComplete(user)) {
-      req.user = user;                // treat as authorized
-      return next();
-    }
-
-    // profile exists but incomplete → go to complete-profile
-    return redirectToCompleteProfile(req, res);
-  } catch (err) {
+    req.user = user;                // treat as authorized
+    return next();
+    }catch (err) {
     next(err);
   }
 };
