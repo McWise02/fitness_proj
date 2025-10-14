@@ -18,12 +18,15 @@ const isLngLat = (arr) =>
 
 /** Helper: make all fields optional & drop `exists` from a schema object */
 function makeAllOptional(schemaObj) {
-  const clone = JSON.parse(JSON.stringify(schemaObj));
-  for (const key of Object.keys(clone)) {
-    delete clone[key].exists;
-    clone[key].optional = true;
+  const out = {};
+  for (const [key, cfg] of Object.entries(schemaObj)) {
+    // Shallow copy is enough; it preserves functions like custom.options
+    const copy = { ...cfg };
+    delete copy.exists;         // remove required-ness
+    copy.optional = true;       // mark optional
+    out[key] = copy;
   }
-  return clone;
+  return out;
 }
 
 /** Base CREATE schema as a plain object */
