@@ -38,6 +38,6 @@ router.post('/complete-profile', ensureAuthed, userCtrl.completeProfile);
 router.get('/success', (req, res) => res.status(200).json({ ok: true, user: req.user || null }));
 router.get('/failure', (_req, res) => res.status(401).json({ ok: false, message: 'GitHub authentication failed' }));
 router.post('/logout', userCtrl.logout);
-router.delete('/:id', userController.deleteUserById);
+router.delete('/:id', userCtrl.deleteUserById);
 
 module.exports = router;

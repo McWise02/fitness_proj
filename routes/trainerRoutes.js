@@ -26,7 +26,7 @@ router.get(
   trainerCtrl.listByCity
 );
 
-router.delete('/:id', trainerController.deleteTrainerById);
+router.delete('/:id', trainerCtrl.deleteTrainerById);
 
 // Get your own trainer profile
 router.get(
