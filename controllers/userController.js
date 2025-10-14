@@ -3,44 +3,73 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const userDb = require('../database/userDb'); 
 
+// controllers/authController.js
 exports.afterGithubCallback = async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    const emailFromGithub = Array.isArray(req.user?.emails) && req.user.emails[0]?.value
-      ? req.user.emails[0].value
-      : null;
-    const avatarUrl = req.user?.avatar;
+    const githubId = req.user?.id; // passport-github2 puts the GitHub id here
+    if (!githubId) return res.redirect('/auth/failure');
 
-    const isAlreadyuser = await userDb.findById(userId);
-    if (isAlreadyuser) {
-      req.session.userId = userId.toString();
-      return res.redirect('/api-docs');
+    const emailFromGithub =
+      Array.isArray(req.user?.emails) && req.user.emails[0]?.value
+        ? req.user.emails[0].value
+        : null;
+
+    const avatarUrl =
+      req.user?.photos?.[0]?.value ||
+      req.user?.avatarUrl ||
+      null;
+
+    // 1) If there's already a logged-in app user, link GitHub to that account
+    if (req.session?.userId) {
+      const currentUserId = String(req.session.userId);
+      // upsert/link githubId to the existing user (no-op if already linked)
+      const linked = await userDb.linkGithubToUser(currentUserId, {
+        githubId,
+        email: emailFromGithub,
+        avatarUrl,
+      });
+
+      if (!linked) return res.redirect('/auth/complete-profile');
+
+      req.session.userId = linked._id.toString();
+      const dest = (req.session.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
+        ? req.session.returnTo
+        : '/api-docs';
+      if (req.session.returnTo) delete req.session.returnTo;
+      return res.redirect(dest);
     }
-    const appUser = await userDb.ensureLinkedFromGithub({
-      githubId,
-      email: emailFromGithub,
-      avatarUrl,
-    });
 
-    if (!appUser) {
-      req.session.returnTo = '/auth/complete-profile';
+    // 2) No existing session: try to find a user by githubId
+    let user = await userDb.findByGithubId(githubId);
+    if (!user) {
+      // create or link by email if possible
+      user = await userDb.ensureLinkedFromGithub({
+        githubId,
+        email: emailFromGithub,
+        avatarUrl,
+        profile: req.user, // optional, if your DB helper uses it
+      });
+    }
+
+    if (!user) {
+      if (req.session) req.session.returnTo = '/auth/complete-profile';
       return res.redirect('/auth/complete-profile');
     }
 
-    req.session.userId = appUser._id.toString();
+    req.session.userId = user._id.toString();
 
-    const dest =
-      (req.session && req.session.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
-        ? req.session.returnTo
-        : '/api-docs';
+    const dest = (req.session?.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
+      ? req.session.returnTo
+      : '/api-docs';
+    if (req.session?.returnTo) delete req.session.returnTo;
 
-    if (req.session) delete req.session.returnTo;
     return res.redirect(dest);
   } catch (err) {
     console.error('afterGithubCallback error:', err);
     return res.redirect('/auth/failure');
   }
 };
+
 
 exports.deleteUserById = async (req, res) => {
   try {
