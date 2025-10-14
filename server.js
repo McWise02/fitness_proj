@@ -8,7 +8,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json'); // keep your file name
-
+const MongoStore = require('connect-mongo');
 // ---- ROUTES (fix the filenames to your actual routes) ----
 const gymRoutes = require('./routes/gymRoutes');
 const machineRoutes = require('./routes/machineRoutes');
@@ -22,6 +22,7 @@ passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
 
 passport.use(
+  'github',
   new GitHubStrategy(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
