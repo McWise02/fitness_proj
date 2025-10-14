@@ -107,57 +107,60 @@ exports.me = (req, res) => {
 
 exports.completeProfile = async (req, res) => {
   try {
-
-
-
     const {
-      firstName,
-      lastName,
-      email,
-      password,
-      goals,
-      preferredWorkoutTimes,
-      city,
-      country,
+      firstName, lastName, email, password,
+      goals, preferredWorkoutTimes, city, country,
     } = req.body;
 
-    const userId = String(req.session?.userId);
 
-    const isAlreadyuser = await userDb.findById(userId);
-    if (isAlreadyuser) {
-      req.session.userId = userId.toString();
-      return res.redirect('/api-docs');
-    }
+    const sessionUserId = req.session?.userId;
+    const hasValidSessionId = mongoose.isValidObjectId(sessionUserId);
 
-    if (!firstName || !lastName || !email || !password) {
+
+    if (!hasValidSessionId && (!firstName || !lastName || !email || !password)) {
       return res.status(400).send('Missing required fields');
     }
 
-
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    const goalsArr = (goals || '')
+  
+    const goalsArr = (goals ?? '')
       .split(',')
-      .map((s) => s.trim())
+      .map(s => s.trim())
       .filter(Boolean);
 
-    const pwt =
-      preferredWorkoutTimes && ['morning', 'afternoon', 'evening'].includes(preferredWorkoutTimes)
-        ? [preferredWorkoutTimes]
-        : [];
+    const pwt = (
+      ['morning','afternoon','evening'].includes(preferredWorkoutTimes)
+        ? [preferredWorkoutTimes] : []
+    );
 
-    const userDoc = await userDb.upsertFromProfileCompletion({
-      firstName,
-      lastName,
-      email,
-      passwordHash,
-      goals: goalsArr,
-      preferredWorkoutTimes: pwt,
-      city,
-      country,
-      githubId: req.user?.id,
-      avatarUrl: req.user?.avatar,
-    });
+
+    const passwordHash = password ? await bcrypt.hash(password, 12) : undefined;
+
+    let userDoc;
+    if (hasValidSessionId) {
+      // Update the existing user
+      userDoc = await userDb.updateProfile(sessionUserId, {
+        firstName, lastName, email, city, country,
+        goals: goalsArr,
+        preferredWorkoutTimes: pwt,
+        ...(passwordHash ? { passwordHash } : {}),
+      });
+    } else {
+
+      userDoc = await userDb.upsertFromProfileCompletion({
+        firstName, lastName, email,
+        passwordHash,
+        goals: goalsArr,
+        preferredWorkoutTimes: pwt,
+        city, country,
+        // If you want to carry githubId/avatar from a prior step, store them in session earlier
+        githubId: req.session?.githubId ?? undefined,
+        avatarUrl: req.session?.avatarUrl ?? undefined,
+      });
+    }
+
+    if (!userDoc) {
+      return res.status(500).send('Failed to save profile');
+    }
 
     req.session.userId = userDoc._id.toString();
     return res.redirect('/api-docs');
