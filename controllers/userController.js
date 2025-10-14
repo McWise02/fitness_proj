@@ -220,20 +220,4 @@ exports.getUserById = async (req, res) => {
 };
 
 
-exports.afterGithubCallback = async (req, res) => {
-  try {
-    // ... your linking logic ...
-    const dest = (req.session && req.session.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
-      ? req.session.returnTo
-      : '/auth/complete-profile'; // or '/api-docs' if you prefer
-
-    if (req.session) delete req.session.returnTo;
-
-    // ✅ ensure the session (and Set-Cookie) is flushed before redirect
-    req.session.save(() => res.redirect(dest));
-  } catch (e) {
-    console.error(e);
-    res.redirect('/auth/failure');
-  }
-};
 
