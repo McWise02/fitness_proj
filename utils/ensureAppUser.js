@@ -1,7 +1,5 @@
 // middleware/ensureAppUser.js
-const mongoose = require('mongoose');
 const userDb = require('../database/userDb');
-const { isProfileComplete } = require('../utils/profile');
 
 module.exports = async function ensureAppUser(req, res, next) {
   try {
