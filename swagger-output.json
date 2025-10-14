@@ -60,7 +60,7 @@
         }
       }
     },
-    "/users/{id}": {
+    "/auth/{id}": {
       "delete": {
         "tags": ["Users"],
         "summary": "Delete a user by ID",
