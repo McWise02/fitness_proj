@@ -157,6 +157,7 @@ exports.completeProfile = async (req, res) => {
       userDoc = await userDb.updateProfile(sessionUserId, {
         firstName, lastName, email, city, country,
         goals: goalsArr,
+        githubId: req.session?.githubId ?? undefined,
         preferredWorkoutTimes: pwt,
         ...(passwordHash ? { passwordHash } : {}),
       });
