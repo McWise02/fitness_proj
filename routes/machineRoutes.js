@@ -17,6 +17,6 @@ router.put('/:id', machineRulesUpdate, validate, machineController.updateMachine
 router.delete('/:id', machineIdParam, validate, machineController.deleteMachine);
 
 
-router.get('/', ensureAuthed, machineListQuery, validate, machineController.listMachines);
+router.get('/', machineListQuery, validate, machineController.listMachines);
 
 module.exports = router;
