@@ -114,7 +114,7 @@ exports.completeProfile = async (req, res) => {
 
 
     const sessionUserId = req.session?.userId;
-    const hasValidSessionId = mongoose.isValidObjectId(sessionUserId);
+    const hasValidSessionId = sessionUserId && String(sessionUserId).match(/^[a-fA-F0-9]{24}$/);
 
 
     if (!hasValidSessionId && (!firstName || !lastName || !email || !password)) {
