@@ -8,7 +8,8 @@ const normalizeEmail = (v) =>
 
 async function findByGithubId(githubId) {
   if (!githubId) return null;
-  return await User.findOne({ githubId }).exec();
+  console.log("This is the githubId being searched:", githubId);
+  return User.findOne({ githubId: githubId }).lean();
 }
 
 async function findByEmail(email) {
