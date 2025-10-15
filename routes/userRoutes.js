@@ -35,7 +35,7 @@ router.get('/me', ensureAuthed, userCtrl.me);
 // Save profile → create/update User → redirect /api-docs
 router.post('/complete-profile', ensureAuthed, userCtrl.completeProfile);
 
-router.put('/me', ensureAuthed, userCtrl.updateMeByGithubId);
+router.put('/update-me', ensureAuthed, userCtrl.updateMeByGithubId);
 
 // Status & logout
 router.get('/success', (req, res) => res.status(200).json({ ok: true, user: req.user || null }));
