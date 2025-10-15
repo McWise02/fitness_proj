@@ -165,6 +165,7 @@ exports.updateMeByGithubId = async (req, res) => {
     console.log("updateMeByGithubId called with body:", req.body);
     console.log('Session data:', req.session);
     const githubId = req.session?.githubId;
+    console.log("Github ID from session:", githubId);
     if (!githubId) {
       return res.status(401).json({ error: 'Not authenticated (missing githubId in session).' });
     }
