@@ -122,7 +122,7 @@
       }
     },
     "/users/me": {
-      "post": {
+      "put": {
         "summary": "Update current user (identified by githubId in session)",
         "description": "Updates profile fields for the currently authenticated user. Authentication is via session cookie; the server resolves the user by the githubId stored in the session.",
         "tags": ["Users"],
