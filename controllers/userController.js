@@ -193,7 +193,7 @@ exports.updateMeByGithubId = async (req, res) => {
     const updated = await userDb.updateUserByGithubId(githubId, patch);
     if (!updated) return res.status(404).json({ error: 'User not found for this githubId.' });
 
-    return res.json(safeUser(updated));
+    return res.json(updated);
   } catch (err) {
     console.error('updateMeByGithubId error:', err);
     return res.status(500).json({ error: 'Internal server error' });
