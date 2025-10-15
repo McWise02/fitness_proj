@@ -326,9 +326,51 @@
               }
             }
           }
+        },
+    
+      "responses": {
+          "200": {
+            "description": "Machine linked or incremented",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Machine linked to gym" },
+                    "gym": { "$ref": "#/components/schemas/Gym" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid IDs or body",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "404": {
+            "description": "Gym or Machine not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
         }
       }
     },
+    
 
 
     "/machines": {
