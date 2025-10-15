@@ -1,7 +1,7 @@
 const express = require('express');
 const router = new express.Router();
 
-const ensureAuthed = require('../utils/ensureAuthed');     // GitHub session present
+const ensureAuthed = require('../utils/ensureAuthed');
 const ensureAppUser = require('../utils/ensureAppUser'); 
 const trainerCtrl = require('../controllers/trainerController');
 const validate = require('../utils/validation');

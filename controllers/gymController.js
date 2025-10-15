@@ -84,8 +84,8 @@ exports.getGymsByMachine = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Error searching gyms by machine', error: err.message });
   }
-
-  exports.linkMachineToGym = async (req, res) => {
+};
+exports.linkMachineToGym = async (req, res) => {
   try {
     const { gymId, machineId } = req.body || {};
 
@@ -109,4 +109,4 @@ exports.getGymsByMachine = async (req, res) => {
     return res.status(500).json({ message: 'Error linking machine to gym', error: err.message });
   }
 };
-};
+
