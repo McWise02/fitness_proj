@@ -58,7 +58,7 @@ async function deleteById(id) {
   return User.findByIdAndDelete(id);
 }
 
-exports.updateUserByGithubId = async (githubId, patch) => {
+async function updateUserByGithubId (githubId, patch){
   if (!githubId) throw new Error('githubId is required');
 
   const allowed = [
@@ -160,6 +160,7 @@ module.exports = {
   findByEmail,
   findByGithubId,
   findByGithubOrEmail,
+  updateUserByGithubId,
 
   // mutations
   linkGithubToUser,
