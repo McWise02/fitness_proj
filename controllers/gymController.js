@@ -88,7 +88,7 @@ exports.getGymsByMachine = async (req, res) => {
 exports.linkMachineToGym = async (req, res) => {
   try {
     const { gymId, machineId, quantity = 1, lastServicedAt, areaNote } = req.body || {};
-
+    console.log(req.body);
 
     // Ensure the machine exists (optional but recommended)
     const machineExists = await Machine.exists({ _id: machineId });
@@ -101,7 +101,7 @@ exports.linkMachineToGym = async (req, res) => {
       lastServicedAt,
       areaNote
     });
-    
+
     if (!updatedGym) {
       return res.status(404).json({ message: 'Gym not found' });
     }
