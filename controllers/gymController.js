@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const gymDb = require('../database/gymDb');
-
+const Machine = require('../models/Machine');
 
 const isObjectId = (v) => mongoose.Types.ObjectId.isValid(v);
 

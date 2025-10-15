@@ -255,7 +255,7 @@
         "summary": "Get a gym by ID",
         "parameters": [{ "$ref": "#/components/parameters/IdParam" }],
         "responses": {
-          "200": { "description": "Gym object", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Gym" } } } },
+          "200": { "description": "Gym object"},
           "404": { "description": "Not found" },
           "400": { "description": "Invalid ID" }
         }
@@ -296,8 +296,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Array of gyms",
-            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Gym" } } } }
+            "description": "Array of gyms"
           },
           "400": { "description": "Invalid machineId" }
         }
@@ -312,7 +311,6 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/LinkMachineRequest" },
               "examples": {
                 "default": {
                   "value": {
@@ -332,8 +330,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string", "example": "Machine linked to gym" },
-                    "gym": { "$ref": "#/components/schemas/Gym" }
+                    "message": { "type": "string", "example": "Machine linked to gym" }
                   }
                 }
               }
@@ -343,7 +340,7 @@
             "description": "Invalid IDs provided",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
                 "examples": { "invalidIds": { "value": { "message": "Invalid gymId or machineId" } } }
               }
             }
@@ -352,7 +349,7 @@
             "description": "Not authenticated",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
                 "examples": { "unauthed": { "value": { "message": "Not authenticated" } } }
               }
             }
@@ -361,7 +358,7 @@
             "description": "Gym or Machine not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" },
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
                 "examples": {
                   "gymNotFound": { "value": { "message": "Gym not found" } },
                   "machineNotFound": { "value": { "message": "Machine not found" } }
@@ -373,7 +370,7 @@
             "description": "Server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Error" }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           }
