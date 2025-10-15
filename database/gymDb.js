@@ -10,7 +10,6 @@ async function create(data) {
 
 async function addMachineToGym(gymId, machineId, { quantity = 1, lastServicedAt, areaNote } =  {}) {
 
-    // 1) Try to increment quantity if machine already linked
   const setUpdates = {};
   if (lastServicedAt) setUpdates['machines.$.lastServicedAt'] = lastServicedAt;
   if (areaNote) setUpdates['machines.$.areaNote'] = areaNote;
@@ -26,7 +25,6 @@ async function addMachineToGym(gymId, machineId, { quantity = 1, lastServicedAt,
 
   if (updated) return updated;
 
-  // 2) If not present, push a new subdoc
   updated = await Gym.findOneAndUpdate(
     { _id: gymId },
     {
@@ -42,7 +40,7 @@ async function addMachineToGym(gymId, machineId, { quantity = 1, lastServicedAt,
     { new: true, runValidators: true }
   ).populate('machines.machine').lean();
 
-  return updated; // null if gym not found
+  return updated; 
 }
 
 
@@ -55,9 +53,8 @@ async function getById(id) {
 }
 
 async function getAll() {
-  // Add .select(...) if you want to trim fields
   const gyms = await Gym.find().lean();
-  return gyms; // [] when no gyms
+  return gyms;
 }
 
 async function update(id, updates) {
@@ -74,10 +71,7 @@ async function remove(id) {
   return !!result;
 }
 
-/**
- * Find gyms that have a specific machine in their inventory.
- * Optional filters: { city, country }
- */
+
 async function findByMachine(machineId, filters = {}) {
   const query = {
     'machines.machine': toObjectId(machineId),
