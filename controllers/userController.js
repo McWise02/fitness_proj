@@ -79,7 +79,8 @@ exports.completeProfile = async (req, res) => {
       goals, preferredWorkoutTimes, city, country,
     } = req.body;
 
-    const githubId = req.sessio?.githubId
+    const githubId = req.session?.githubId
+    console.log("Github ID from session:", githubId);
 
 
 
