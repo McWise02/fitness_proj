@@ -8,7 +8,7 @@ async function create(data) {
   return gym.toObject();
 }
 
-async function addMachineToGym(gymId, machineId) {
+async function addMachineToGym(gymId, machineId, { quantity = 1, lastServicedAt, areaNote } =  {}) {
 
     // 1) Try to increment quantity if machine already linked
   const setUpdates = {};
