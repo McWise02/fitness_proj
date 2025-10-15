@@ -58,6 +58,50 @@ async function deleteById(id) {
   return User.findByIdAndDelete(id);
 }
 
+exports.updateUserByGithubId = async (githubId, patch) => {
+  if (!githubId) throw new Error('githubId is required');
+
+  const allowed = [
+    'firstName',
+    'lastName',
+    'email',
+    'goals',
+    'preferredWorkoutTimes',
+    'city',
+    'country',
+    'avatarUrl',
+  ];
+
+  const update = {};
+  for (const key of allowed) {
+    const val = patch[key];
+    if (val === undefined) continue;
+
+    if (key === 'firstName' || key === 'lastName' || key === 'city' || key === 'country') {
+      if (typeof val === 'string' && val.trim() !== '') update[key] = val.trim();
+      else if (val === null) update[key] = undefined; // allow clearing with null if desired
+    } else if (key === 'email') {
+      if (typeof val === 'string' && val.trim() !== '') update.email = normalizeEmail(val);
+    } else if (key === 'goals' || key === 'preferredWorkoutTimes') {
+      if (Array.isArray(val)) update[key] = val;
+    } else if (key === 'avatarUrl') {
+      if (typeof val === 'string' && val.trim() !== '') update.avatarUrl = val.trim();
+    }
+  }
+
+  if (Object.keys(update).length === 0) {
+    return await User.findOne({ githubId }).exec();
+  }
+
+  const doc = await User.findOneAndUpdate(
+    { githubId },
+    { $set: update },
+    { new: true, runValidators: true }
+  ).exec();
+
+  return doc; // may be null if not found
+};
+
 async function upsertFromProfileCompletion({
   firstName,
   lastName,

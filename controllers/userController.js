@@ -160,5 +160,46 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+exports.updateMeByGithubId = async (req, res) => {
+  try {
+    const githubId = req.session?.githubId;
+    if (!githubId) {
+      return res.status(401).json({ error: 'Not authenticated (missing githubId in session).' });
+    }
+
+    // Only allow these fields to be updated from the client
+    const {
+      firstName,
+      lastName,
+      email,
+      goals,
+      preferredWorkoutTimes,
+      city,
+      country,
+      avatarUrl,
+      // passwordHash // usually NOT updated here — leave out unless you have a separate flow
+    } = req.body || {};
+
+    const patch = {
+      firstName,
+      lastName,
+      email,
+      goals,
+      preferredWorkoutTimes,
+      city,
+      country,
+      avatarUrl,
+    };
+
+    const updated = await userDb.updateUserByGithubId(githubId, patch);
+    if (!updated) return res.status(404).json({ error: 'User not found for this githubId.' });
+
+    return res.json(safeUser(updated));
+  } catch (err) {
+    console.error('updateMeByGithubId error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 
