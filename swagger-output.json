@@ -302,82 +302,32 @@
         }
       }
     },
-    "/gyms/link-machine": {
+   "/gyms/link-machine": {
       "post": {
-        "summary": "Link a machine to a gym",
-        "description": "Adds the specified machine to the gym's machines array. Requires authentication.",
+        "summary": "Link or increment a machine on a gym",
+        "description": "If the machine already exists in the gym's machines array, increments quantity; otherwise adds a new subdocument.",
         "tags": ["Gyms"],
+        "security": [{ "cookieAuth": [] }, { "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
+              "schema": { "$ref": "#/components/schemas/LinkMachineRequest" },
               "examples": {
                 "default": {
                   "value": {
                     "gymId": "66f4f8c4f1b2a9341b2c0a77",
-                    "machineId": "66f4fa53c9be3b4e8b1d22aa"
+                    "machineId": "66f4fa53c9be3b4e8b1d22aa",
+                    "quantity": 1,
+                    "lastServicedAt": "2025-09-01T00:00:00.000Z",
+                    "areaNote": "Strength zone 2"
                   }
                 }
               }
             }
           }
-        },
-        "responses": {
-          "200": {
-            "description": "Machine linked successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Machine linked to gym" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid IDs provided",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
-                "examples": { "invalidIds": { "value": { "message": "Invalid gymId or machineId" } } }
-              }
-            }
-          },
-          "401": {
-            "description": "Not authenticated",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
-                "examples": { "unauthed": { "value": { "message": "Not authenticated" } } }
-              }
-            }
-          },
-          "404": {
-            "description": "Gym or Machine not found",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
-                "examples": {
-                  "gymNotFound": { "value": { "message": "Gym not found" } },
-                  "machineNotFound": { "value": { "message": "Machine not found" } }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          }
-        },
-        "security": [{ "cookieAuth": [] }, { "bearerAuth": [] }]
-      }
-    },
+        }
+      },
 
 
     "/machines": {
@@ -687,6 +637,17 @@
     },
 
     "schemas": {
+      "LinkMachineRequest": {
+        "type": "object",
+        "required": ["gymId", "machineId"],
+        "properties": {
+          "gymId": { "type": "string", "description": "Gym MongoDB ObjectId" },
+          "machineId": { "type": "string", "description": "Machine MongoDB ObjectId" },
+          "quantity": { "type": "integer", "minimum": 1, "default": 1 },
+          "lastServicedAt": { "type": "string", "format": "date-time" },
+          "areaNote": { "type": "string", "maxLength": 200 }
+        }
+      },
       "MessageResponse": {
         "type": "object",
         "properties": {
