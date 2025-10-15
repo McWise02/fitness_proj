@@ -9,56 +9,13 @@ exports.afterGithubCallback = async (req, res) => {
     const githubId = req.user?.id; // passport-github2 puts the GitHub id here
     if (!githubId) return res.redirect('/auth/failure');
 
-    const emailFromGithub =
-      Array.isArray(req.user?.emails) && req.user.emails[0]?.value
-        ? req.user.emails[0].value
-        : null;
-
-    const avatarUrl =
-      req.user?.photos?.[0]?.value ||
-      req.user?.avatarUrl ||
-      null;
-
     console.log("Github ID:", githubId);
 
-    // 1) If there's already a logged-in app user, link GitHub to that account
-    if (req.session?.userId) {
-      const currentUserId = String(req.session.userId);
-      // upsert/link githubId to the existing user (no-op if already linked)
-      const linked = await userDb.linkGithubToUser(currentUserId, {
-        githubId,
-        email: emailFromGithub,
-        avatarUrl,
-      });
 
-      if (!linked) {
-        console.log('No user found to link; redirecting to complete-profile');
-        return res.redirect('/auth/complete-profile');} 
 
-      req.session.userId = linked._id.toString();
-      const dest = (req.session.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
-        ? req.session.returnTo
-        : '/api-docs';
-      if (req.session.returnTo) delete req.session.returnTo;
-      return res.redirect(dest);
-    }
-
-    console.log("Github ID:", githubId);
-    // 2) No existing session: try to find a user by githubId
     let user = await userDb.findByGithubId(githubId);
     if (!user) {
-      // create or link by email if possible
-      user = await userDb.ensureLinkedFromGithub({
-        githubId,
-        email: emailFromGithub,
-        avatarUrl,
-        profile: req.user, // optional, if your DB helper uses it
-      });
-    }
-
-    if (!user) {
-      console.log('No user found or created; redirecting to complete-profile');
-      if (req.session) req.session.returnTo = '/auth/complete-profile';
+      req.session.githubId = githubId;
       return res.redirect('/auth/complete-profile');
     }
 
@@ -75,6 +32,8 @@ exports.afterGithubCallback = async (req, res) => {
     return res.redirect('/auth/failure');
   }
 };
+
+
 
 
 exports.deleteUserById = async (req, res) => {
@@ -97,13 +56,6 @@ exports.deleteUserById = async (req, res) => {
 
 exports.renderSignup = async (req, res) => {
     try {
-      console.log('Rendering signup page');
-      const id = req.session?.userId;
-      console.log('Session userId in renderSignup:', id);
-      if (id) {
-        const user = await userDb.getById(id);
-        if (user) return res.redirect('/api-docs');
-      }
       const filePath = path.join(__dirname, '..', 'views/account', 'signup.html');
       res.sendFile(filePath);
     } catch (e) {
@@ -127,13 +79,11 @@ exports.completeProfile = async (req, res) => {
       goals, preferredWorkoutTimes, city, country,
     } = req.body;
 
-
-    const sessionUserId = req.session?.userId;
-    console.log('Session userId:', sessionUserId);
-    const hasValidSessionId = sessionUserId && String(sessionUserId).match(/^[a-fA-F0-9]{24}$/);
+    const githubId = req.sessio?.githubId
 
 
-    if (!hasValidSessionId && (!firstName || !lastName || !email || !password)) {
+
+    if ((!firstName || !lastName || !email || !password)) {
       return res.status(400).send('Missing required fields');
     }
 
@@ -152,28 +102,17 @@ exports.completeProfile = async (req, res) => {
     const passwordHash = password ? await bcrypt.hash(password, 12) : undefined;
 
     let userDoc;
-    if (hasValidSessionId) {
-      // Update the existing user
-      userDoc = await userDb.updateProfile(sessionUserId, {
-        firstName, lastName, email, city, country,
-        goals: goalsArr,
-        githubId: req.session?.githubId ?? undefined,
-        preferredWorkoutTimes: pwt,
-        ...(passwordHash ? { passwordHash } : {}),
-      });
-    } else {
 
-      userDoc = await userDb.upsertFromProfileCompletion({
-        firstName, lastName, email,
-        passwordHash,
-        goals: goalsArr,
-        preferredWorkoutTimes: pwt,
-        city, country,
-        // If you want to carry githubId/avatar from a prior step, store them in session earlier
-        githubId: req.session?.githubId ?? undefined,
-        avatarUrl: req.session?.avatarUrl ?? undefined,
-      });
-    }
+    userDoc = await userDb.upsertFromProfileCompletion({
+      firstName, lastName, email,
+      passwordHash,
+      goals: goalsArr,
+      preferredWorkoutTimes: pwt,
+      city, country,
+      githubId: githubId ?? undefined,
+      // If you want to carry githubId/avatar from a prior step, store them in session earlier
+      avatarUrl: req.session?.avatarUrl ?? undefined,
+    });
 
     if (!userDoc) {
       return res.status(500).send('Failed to save profile');
