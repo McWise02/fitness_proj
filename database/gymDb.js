@@ -32,7 +32,7 @@ async function addMachineToGym(gymId, machineId, { quantity = 1, lastServicedAt,
     {
       $push: {
         machines: {
-          machine: new machineId,
+          machine: machineId,
           quantity,
           ...(lastServicedAt ? { lastServicedAt } : {}),
           ...(areaNote ? { areaNote } : {})
