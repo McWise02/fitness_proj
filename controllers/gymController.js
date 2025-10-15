@@ -87,7 +87,7 @@ exports.getGymsByMachine = async (req, res) => {
 };
 exports.linkMachineToGym = async (req, res) => {
   try {
-    const { gymId, machineId } = req.body || {};
+    const { gymId, machineId, quantity, notes } = req.body || {};
 
 
     // Ensure the machine exists (optional but recommended)

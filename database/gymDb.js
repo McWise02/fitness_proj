@@ -10,16 +10,41 @@ async function create(data) {
 
 async function addMachineToGym(gymId, machineId) {
 
-  const updated = await Gym.findOneAndUpdate(
-    { _id: new ObjectId(gymId) },
-    { $addToSet: { machines: new ObjectId(machineId) } },
-    { new: true }
-  )
-  .populate('machines')   
-  .lean();
+    // 1) Try to increment quantity if machine already linked
+  const setUpdates = {};
+  if (lastServicedAt) setUpdates['machines.$.lastServicedAt'] = lastServicedAt;
+  if (areaNote) setUpdates['machines.$.areaNote'] = areaNote;
 
-  return updated;
+  let updated = await Gym.findOneAndUpdate(
+    { _id: new ObjectId(gymId), 'machines.machine': new ObjectId(machineId) },
+    {
+      $inc: { 'machines.$.quantity': quantity },
+      ...(Object.keys(setUpdates).length ? { $set: setUpdates } : {})
+    },
+    { new: true, runValidators: true }
+  ).populate('machines.machine').lean();
+
+  if (updated) return updated;
+
+  // 2) If not present, push a new subdoc
+  updated = await Gym.findOneAndUpdate(
+    { _id: new ObjectId(gymId) },
+    {
+      $push: {
+        machines: {
+          machine: new ObjectId(machineId),
+          quantity,
+          ...(lastServicedAt ? { lastServicedAt } : {}),
+          ...(areaNote ? { areaNote } : {})
+        }
+      }
+    },
+    { new: true, runValidators: true }
+  ).populate('machines.machine').lean();
+
+  return updated; // null if gym not found
 }
+
 
 async function getById(id) {
   const gym = await Gym.findById(id)
