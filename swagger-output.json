@@ -121,6 +121,41 @@
         }
       }
     },
+    "/users/me": {
+      "post": {
+        "summary": "Update current user (identified by githubId in session)",
+        "description": "Updates profile fields for the currently authenticated user. Authentication is via session cookie; the server resolves the user by the githubId stored in the session.",
+        "tags": ["Users"],
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "firstName": { "type": "string", "example": "Micah" },
+                  "lastName": { "type": "string", "example": "Brown" },
+                  "email": { "type": "string", "format": "email", "example": "micah@example.com" },
+                  "goals": { "type": "array", "items": { "type": "string" }, "example": ["Lose weight", "Run 5k"] },
+                  "preferredWorkoutTimes": { "type": "array", "items": { "type": "string" }, "example": ["morning", "evening"] },
+                  "city": { "type": "string", "example": "Frankfurt" },
+                  "country": { "type": "string", "example": "DE" },
+                  "avatarUrl": { "type": "string", "format": "uri", "example": "https://avatars.githubusercontent.com/u/12345" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "User updated." },
+          "401": { "description": "Not authenticated (missing githubId in session)." },
+          "404": { "description": "User not found for this githubId." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
      "/auth/me": {
     "get": {
       "tags": ["Users"],
