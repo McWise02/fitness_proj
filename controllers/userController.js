@@ -176,7 +176,6 @@ exports.updateMeByGithubId = async (req, res) => {
       city,
       country,
       avatarUrl,
-      // passwordHash // usually NOT updated here — leave out unless you have a separate flow
     } = req.body || {};
 
     const patch = {
@@ -195,7 +194,7 @@ exports.updateMeByGithubId = async (req, res) => {
 
     return res.json(updated);
   } catch (err) {
-    console.error('updateMeByGithubId error:', err);
+    console.error('error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };

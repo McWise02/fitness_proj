@@ -70,7 +70,6 @@ exports.deleteGym = async (req, res) => {
   }
 };
 
-// GET /gyms/by-machine/:machineId?city=&country=
 exports.getGymsByMachine = async (req, res) => {
   try {
     const { machineId } = req.params;
@@ -85,4 +84,29 @@ exports.getGymsByMachine = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Error searching gyms by machine', error: err.message });
   }
+
+  exports.linkMachineToGym = async (req, res) => {
+  try {
+    const { gymId, machineId } = req.body || {};
+
+
+    // Ensure the machine exists (optional but recommended)
+    const machineExists = await Machine.exists({ _id: machineId });
+    if (!machineExists) {
+      return res.status(404).json({ message: 'Machine not found' });
+    }
+
+    const updatedGym = await gymDb.addMachineToGym(gymId, machineId);
+    if (!updatedGym) {
+      return res.status(404).json({ message: 'Gym not found' });
+    }
+
+    return res.status(200).json({
+      message: 'Machine linked to gym',
+      gym: updatedGym
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Error linking machine to gym', error: err.message });
+  }
+};
 };

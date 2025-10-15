@@ -303,6 +303,85 @@
         }
       }
     },
+    "/gyms/link-machine": {
+      "post": {
+        "summary": "Link a machine to a gym",
+        "description": "Adds the specified machine to the gym's machines array. Requires authentication.",
+        "tags": ["Gyms"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LinkMachineRequest" },
+              "examples": {
+                "default": {
+                  "value": {
+                    "gymId": "66f4f8c4f1b2a9341b2c0a77",
+                    "machineId": "66f4fa53c9be3b4e8b1d22aa"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Machine linked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Machine linked to gym" },
+                    "gym": { "$ref": "#/components/schemas/Gym" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid IDs provided",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": { "invalidIds": { "value": { "message": "Invalid gymId or machineId" } } }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": { "unauthed": { "value": { "message": "Not authenticated" } } }
+              }
+            }
+          },
+          "404": {
+            "description": "Gym or Machine not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "examples": {
+                  "gymNotFound": { "value": { "message": "Gym not found" } },
+                  "machineNotFound": { "value": { "message": "Machine not found" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "security": [{ "cookieAuth": [] }, { "bearerAuth": [] }]
+      }
+    },
+
 
     "/machines": {
       "get": {

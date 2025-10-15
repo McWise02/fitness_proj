@@ -8,6 +8,19 @@ async function create(data) {
   return gym.toObject();
 }
 
+async function addMachineToGym(gymId, machineId) {
+
+  const updated = await Gym.findOneAndUpdate(
+    { _id: new ObjectId(gymId) },
+    { $addToSet: { machines: new ObjectId(machineId) } },
+    { new: true }
+  )
+  .populate('machines')   
+  .lean();
+
+  return updated;
+}
+
 async function getById(id) {
   const gym = await Gym.findById(id)
     .populate({ path: 'machines.machine', select: 'name brand type' })
@@ -54,4 +67,4 @@ async function findByMachine(machineId, filters = {}) {
     .lean();
 }
 
-module.exports = { create, getById, update, remove, findByMachine, getAll };
+module.exports = { addMachineToGym, create, getById, update, remove, findByMachine, getAll };
