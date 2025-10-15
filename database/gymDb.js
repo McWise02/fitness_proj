@@ -16,7 +16,7 @@ async function addMachineToGym(gymId, machineId, { quantity = 1, lastServicedAt,
   if (areaNote) setUpdates['machines.$.areaNote'] = areaNote;
 
   let updated = await Gym.findOneAndUpdate(
-    { _id: new ObjectId(gymId), 'machines.machine': new ObjectId(machineId) },
+    { _id: gymId, 'machines.machine': machineId },
     {
       $inc: { 'machines.$.quantity': quantity },
       ...(Object.keys(setUpdates).length ? { $set: setUpdates } : {})
@@ -28,11 +28,11 @@ async function addMachineToGym(gymId, machineId, { quantity = 1, lastServicedAt,
 
   // 2) If not present, push a new subdoc
   updated = await Gym.findOneAndUpdate(
-    { _id: new ObjectId(gymId) },
+    { _id: gymId },
     {
       $push: {
         machines: {
-          machine: new ObjectId(machineId),
+          machine: new machineId,
           quantity,
           ...(lastServicedAt ? { lastServicedAt } : {}),
           ...(areaNote ? { areaNote } : {})
